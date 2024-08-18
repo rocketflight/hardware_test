@@ -1,5 +1,5 @@
 /***************************************************************************
-  This is a config file for pinouts for the OpenRocketFlight Motion Pack
+  This is a config file for pinouts for the RocketFlight Motion Pack
 
   Designed specifically to work with the Heltec Wireless Tracker V1.1
   ----> https://heltec.org/project/wireless-tracker/
@@ -158,7 +158,7 @@
 // #define LED_PIN 18
 
 // #define HELTEC_TRACKER_V1_X
-// #define OPENROCKETFLIGHT_MOTION_PACK_V1
+// #define ROCKETFLIGHT_MOTION_PACK_V1
 
 // // I2C
 // #define I2C_SDA SDA

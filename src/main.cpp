@@ -1,5 +1,5 @@
 /***************************************************************************
-  This is a firmward load to test the OpenRocketFlight Motion Pack hardware.
+  This is a firmward load to test the RocketFlight Motion Pack hardware.
   It is intended to be a simple, stand-alone test as to whether all sensors
   are connected properly and responding as expected.
 
@@ -53,7 +53,7 @@ void setup()
 
     // set up serial comms
     Serial.begin(SERIAL_BAUD);
-    Serial.printf("%lu\tOpenRocketFlight Hardware Test -> %s\n", millis(), HARDWARE_VERSION);
+    Serial.printf("%lu\tRocketFlight Hardware Test -> %s\n", millis(), HARDWARE_VERSION);
     Serial.printf("%lu\t------------------------------------------------------------\n", millis());
 
     // set up I2C comms

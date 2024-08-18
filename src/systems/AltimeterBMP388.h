@@ -1,5 +1,5 @@
 /***************************************************************************
-  This is a simple test for the OpenRocketFlight Motion Pack altimeter
+  This is a simple test for the RocketFlight Motion Pack altimeter
 
   Designed specifically to work with the Heltec Wireless Tracker V1.1
   ----> https://heltec.org/project/wireless-tracker/

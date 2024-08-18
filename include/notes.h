@@ -1,5 +1,5 @@
 /***************************************************************************
-  This is a config file of tones for the OpenRocketFlight Motion Pack
+  This is a config file of tones for the RocketFlight Motion Pack
 
   Designed specifically to work with the Heltec Wireless Tracker V1.1
   ----> https://heltec.org/project/wireless-tracker/

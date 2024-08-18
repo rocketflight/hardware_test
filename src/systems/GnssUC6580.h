@@ -1,5 +1,5 @@
 /***************************************************************************
-  This is a simple test for the OpenRocketFlight Motion Pack GNSS sensor
+  This is a simple test for the RocketFlight Motion Pack GNSS sensor
 
   Designed specifically to work with the Heltec Wireless Tracker V1.1
   ----> https://heltec.org/project/wireless-tracker/
