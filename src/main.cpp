@@ -20,20 +20,15 @@
 #include "systems/MpuICM20948.h"
 #include "systems/BatteryMAX17048.h"
 #include "systems/BuzzerOnboard.h"
+#include "systems/ButtonOnboard.h"
 
-enum PrintMode
-{
-    CONTINUOUS_MPU_ACCEL_GYRO_READING,
-    CONTINUOUS_MPU_QUARTERNION_READING,
-    CONTINUOUS_ALTIMETER_READING,
-    PERIODIC_ALL
-};
-const PrintMode mode = PrintMode::PERIODIC_ALL;
+const PrintMode mode = PrintMode::CONTINUOUS_AIR_PRESSURE_READING;
 
 // forward declarations
 void checkResult(bool result, String message);
 
 LedOnboard led;
+ButtonOnboard button;
 BuzzerOnboard buzzer;
 AltimeterBMP388 altimeter;
 GnssUC6580 gnss;
@@ -64,10 +59,6 @@ void setup()
     result = led.Init(&Serial);
     checkResult(result, "Onboard LED: initialisation failed");
 
-    // set up the tft screen
-    result = tft.Init(&Serial);
-    checkResult(result, "Onboard TFT screen: initialisation failed");
-
     // set up the onboard gnss
     result = gnss.Init(&Serial);
     checkResult(result, "Onboard gnss: initialisation failed");
@@ -91,6 +82,17 @@ void setup()
     // set up the buzzer
     result = buzzer.Init(&Serial);
     checkResult(result, "Onboard buzzer: initialisation failed");
+
+    // set up the button
+    // std::function<void()> doThing = [&]
+    // { object.isMethod(); };
+    result = button.Init(&Serial, [&](Button2 &b)
+                         { altimeter.Reset(); });
+    checkResult(result, "Onboard button: initialisation failed");
+
+    // set up the tft screen
+    result = tft.Init(&Serial, mode, &altimeter.data);
+    checkResult(result, "Onboard TFT screen: initialisation failed");
 
     // initialisation succeeded
     Serial.printf("%lu\tInitialisation completed ok\n", millis());
@@ -148,8 +150,8 @@ void loop()
 
             led.Read();
             buzzer.Read();
-            tft.Read();
             altimeter.Read();
+            tft.Read();
             gnss.Read();
             lipo.Read();
             mpu.Read();

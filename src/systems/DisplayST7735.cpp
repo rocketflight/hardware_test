@@ -14,11 +14,14 @@
 
 #include "DisplayST7735.h"
 
-DisplayST7735::DisplayST7735() {};
+DisplayST7735::DisplayST7735() : _canvas(TFT_WIDTH, TFT_HEIGHT) {};
 
-bool DisplayST7735::Init(Stream *port)
+bool DisplayST7735::Init(Stream *port, PrintMode mode = PrintMode::PERIODIC_ALL, BaroData *data = nullptr)
 {
   HardwareTest::Init(port);
+
+  this->_data = data;
+  this->_mode = mode;
 
   pinMode(TFT_CS_PIN, OUTPUT);
   pinMode(TFT_RST_PIN, OUTPUT);
@@ -54,7 +57,17 @@ void DisplayST7735::Read()
     return;
   }
 
-  _test = _test >= TftTest::Max ? TftTest(0) : TftTest(_test + 1);
+  switch (_mode)
+  {
+  case PrintMode::CONTINUOUS_AIR_PRESSURE_READING:
+    _test = TftTest::Pressure;
+    break;
+  case PrintMode::CONTINUOUS_ALTIMETER_READING:
+  case CONTINUOUS_MPU_ACCEL_GYRO_READING:
+  case CONTINUOUS_MPU_QUARTERNION_READING:
+  default:
+    _test = _test >= TftTest::Max ? TftTest(0) : TftTest(_test + 1);
+  }
 
   switch (_test)
   {
@@ -91,15 +104,69 @@ void DisplayST7735::Read()
   case TftTest::Media:
     DrawMedia();
     break;
+  case TftTest::Pressure:
+    DrawPressure();
+    break;
   default:
     _test = TftTest::Lines;
     DrawLines(ST77XX_YELLOW);
     break;
   };
 
-  _port->printf("%d\tST7735 screen: %s\n",
-                millis(),
-                _tftLabel[_test]);
+  _port->printf("%d\tST7735 screen: %s\n", millis(), _tftLabel[_test]);
+}
+
+void DisplayST7735::DrawPressure()
+{
+  int16_t x1, y1, x = 0, y = 0;
+  uint16_t w, h;
+
+  if (!this->IsOk())
+  {
+    this->Error(F("ST7735 TFT screen: is offline"));
+    return;
+  }
+
+  if (this->_data == nullptr)
+  {
+    this->Error(F("ST7735 TFT screen: barometer is offline"));
+    return;
+  }
+
+  _canvas.fillScreen(ST77XX_BLACK);
+  _canvas.setTextWrap(false);
+
+  // pressure
+  String str = String(this->_data->pressure, 2);
+  _canvas.setFont(LGE_FONT);
+  _canvas.getTextBounds(str, 0, 80, &x1, &y1, &w, &h);
+  x = TFT_WIDTH / 2 - w / 2;
+  y = TFT_HEIGHT / 2 + h / 2;
+  _canvas.setCursor(x, y);
+  _canvas.setTextColor(ST77XX_BLUE);
+  _canvas.print(str);
+
+  // temp
+  str = String(F("Temp: ")) + String(this->_data->temperature, 1) + String(F(" C"));
+  _canvas.setFont(SML_FONT);
+  _canvas.getTextBounds(str, 0, 80, &x1, &y1, &w, &h);
+  x = TFT_WIDTH / 2 - w / 2;
+  y = h;
+  _canvas.setCursor(x, y);
+  _canvas.setTextColor(ST77XX_YELLOW);
+  _canvas.print(str);
+
+  // min / max
+  str = String(this->_data->pressureMin, 2) + String(F(" / ")) + String(this->_data->pressureMax, 2);
+  _canvas.setFont(SML_FONT);
+  _canvas.getTextBounds(str, 0, 80, &x1, &y1, &w, &h);
+  x = TFT_WIDTH / 2 - w / 2;
+  y = TFT_HEIGHT - 1;
+  _canvas.setCursor(x, y);
+  _canvas.setTextColor(ST77XX_YELLOW);
+  _canvas.print(str);
+
+  _tft.drawRGBBitmap(0, 0, _canvas.getBuffer(), _canvas.width(), _canvas.height());
 }
 
 void DisplayST7735::DrawLines(uint16_t color)

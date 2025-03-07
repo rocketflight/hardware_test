@@ -34,8 +34,12 @@ void LedOnboard::Run()
 
   if (millis() >= this->_next)
   {
-    this->_next += LED_MILLIS;
     this->_state = this->_state == LED_OFF ? LED_ON : LED_OFF;
+    if (this->_state == LED_ON)
+      this->_next += LED_ON_MILLIS;
+    else
+      this->_next += LED_OFF_MILLIS;
+
     digitalWrite(LED_PIN, this->_state);
 
     if (VERBOSE)

@@ -28,7 +28,8 @@
 #define LOOP_WAIT_MILLIS 5000
 #define LOOP_CONTINUOUS_MILLIS 100
 
-#define LED_MILLIS 100
+#define LED_ON_MILLIS 50
+#define LED_OFF_MILLIS 4900
 #define LED_ON HIGH
 #define LED_OFF LOW
 #define LED_PIN 18
